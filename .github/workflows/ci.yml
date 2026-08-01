@@ -14,6 +14,7 @@ jobs:
               # Check out the code
               - name: Check out the code
                 uses: actions/checkout@v4
+                
 
               # Code lint
               - name: Linting the code
@@ -25,12 +26,15 @@ jobs:
 
               - name: Install npm package
                 run:  npm install
+                working-directory: frontend
 
               - name: Run Linter
                 run: npm run lint
+                working-directory: frontend
 
               - name: Run Tests
                 run: npm run test     
+                working-directory: frontend
               #- Build
               #- Test
               #- Push 
