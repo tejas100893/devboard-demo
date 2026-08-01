@@ -14,10 +14,9 @@ jobs:
               # Check out the code
               - name: Check out the code
                 uses: actions/checkout@v4
-                
-
-              # Code lint
-              - name: Linting the code
+            
+              # Setup node js
+              - name: Setup NodeJs
                 uses: actions/setup-node@v4
                 with:
                   node-version: '20'
