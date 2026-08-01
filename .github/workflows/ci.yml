@@ -70,8 +70,7 @@ jobs:
               - name: Run golangci-lint
                 uses: golangci/golangci-lint-action@v6
                 working-directory: backend
-                with:
-                  version: v1.60
+                
 
               
 
