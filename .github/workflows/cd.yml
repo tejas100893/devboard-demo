@@ -5,17 +5,10 @@ name: CD
 
 # run after CI workflow has completed and the current branch is 'advanced'
 on:
-  workflow_dispatch:
-    #workflow_run:
-    #    workflows: ['CI']
-    #    types: [completed]
-    #    branches:
-     #       - advanced
-  
+    workflow_call:
 
 jobs:
-    deploy-job:
-      if: github.event.workflow_run.conclusion == 'success'
+    deploy:
       runs-on: self-hosted
       steps:
         - name: Code checkout
