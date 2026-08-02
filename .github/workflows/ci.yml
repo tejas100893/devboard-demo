@@ -1,0 +1,96 @@
+# Goal - I have to Lint, Build, test the code for frontend and backend, 
+# then push the images to docker hub
+
+name: CI
+
+on:
+    push:
+        branches: [advanced]
+
+jobs:
+    frontend-ci:
+          runs-on: ubuntu-latest
+          steps:
+              # Check out the code
+              - name: Check out the code
+                uses: actions/checkout@v4
+            
+              # Setup node js
+              - name: Setup NodeJs
+                uses: actions/setup-node@v4
+                with:
+                  node-version: '20'
+                  cache: 'npm' # Options: 'npm', 'yarn', or 'pnpm'
+                  cache-dependency-path: frontend/package-lock.json
+
+              - name: Install npm package
+                run: npm ci
+                working-directory: frontend
+
+              - name: Run Linter
+                run: npm run lint
+                working-directory: frontend
+
+              - name: Run Tests
+                run: npm run test     
+                working-directory: frontend
+
+              #- Push 
+              - name: Docker Setup [ docker hub login]
+                uses: docker/login-action@v4
+                with:
+                    username: ${{ vars.DOCKERHUB_USERNAME }}
+                    password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+              - name: Docker Build and push
+                uses: docker/build-push-action@v5
+                with:
+                    context: ./frontend
+                    push: true
+                    tags: ${{ vars.DOCKERHUB_USERNAME }}/devboard-demo-frontend-advanced:latest
+
+
+    backend-ci:
+          runs-on: ubuntu-latest
+          steps:
+              # Check out the code
+              - name: Check out the code
+                uses: actions/checkout@v4
+            
+              # Setup Go
+              - name: Set up Go
+                uses: actions/setup-go@v5
+                with:
+                  go-version: '1.22' # Specify your Go version or use stable
+                  cache: true        # Enables automatic dependency caching
+                  cache-dependency-path: backend/go.sum
+
+              - name: Run Go Linter
+                uses: golangci/golangci-lint-action@v6
+                with:
+                  version: v1.64     # Specify the golangci-lint version
+                  working-directory: backend 
+
+              - name: Run Tests
+                working-directory: backend
+                run: go test -v ./...
+              
+              - name: Docker Setup [ docker hub login]
+                uses: docker/login-action@v4
+                with:
+                    username: ${{ vars.DOCKERHUB_USERNAME }}
+                    password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+              - name: Docker Build and push
+                uses: docker/build-push-action@v5
+                with:
+                    context: ./backend
+                    push: true
+                    tags: ${{ vars.DOCKERHUB_USERNAME }}/devboard-demo-backend-advanced:latest
+    
+    deploy:
+        needs: [frontend-ci,backend-ci]
+        uses: ./.github/workflows/cd.yml
+        secrets: inherit
+
+
