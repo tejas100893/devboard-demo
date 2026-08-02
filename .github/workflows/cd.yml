@@ -5,11 +5,11 @@ name: CD
 
 # run after CI workflow has completed and the current branch is 'advanced'
 on:
-    workflow_run:
-        workflows: ['CI']
-        types: [completed]
-        branches:
-            - advanced
+    #workflow_run:
+    #    workflows: ['CI']
+    #    types: [completed]
+    #    branches:
+     #       - advanced
     workflow_dispatch:
 
 jobs:
